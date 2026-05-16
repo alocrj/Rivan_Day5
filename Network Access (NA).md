@@ -51,7 +51,7 @@ then the first group from left to right becomes ::
 &nbsp;
 
 
-### Exercise: Compress IPv6 Addresses
+### 🎯 Exercise 01: Compress IPv6 Addresses
 
 1. 2001:0db8:0000:0000:0000:0000:0000:0000 /64
 
@@ -113,7 +113,13 @@ then the first group from left to right becomes ::
 &nbsp;
 
 
-### 🎯 Exercise 01: Subnet for 8 offices using the network address fd00:1::/64
+### 🎯 Exercise 02: Subnet for 8 offices using the network address fd00:1::/64
+
+<br>
+
+### CAI Method
+
+<br>
 
 __CONVERT *(Bit Value. NOT Length)*__  
 
@@ -152,7 +158,7 @@ __INSERT(*IPASOK Many Times*)__
 &nbsp;
 
 
-### 🎯 Exercise 02: Subnet for 4 offices using the network address fd00:2::/88
+### 🎯 Exercise 03: Subnet for 4 offices using the network address fd00:2::/88
 
 __CONVERT__  
  
@@ -188,7 +194,7 @@ __INSERT(*IPASOK Many Times*)__
 &nbsp;
 
 
-### 🎯 Exercise 03: Subnet for 52 offices using the network address fd00:3:0:33::/112  Determine the 6th subnet.
+### 🎯 Exercise 04: Subnet for 52 offices using the network address fd00:3:0:33::/112  Determine the 6th subnet.
 
 
 __CONVERT__  
@@ -290,12 +296,12 @@ conf t
 ~~~
 
 
-<br>
-<br>
-
+&nbsp;
 ---
 &nbsp;
 
+
+### Find IPv6 Values & Implementation
 
 |             | IP Address             |
 | ---         | ---                    | 
@@ -464,9 +470,7 @@ Telnet the following
 &nbsp;
 
 
-## DISCOVERY PROTOCOL (CDP & LLDP 802.1AB)
-CDP = Multicast 0100.0CCC.CCCC  
-LLDP = Multicast 0180.C200.000E  
+## DISCOVERY PROTOCOL (CDP & LLDP 802.1AB) 
 
 <br>
 
@@ -482,7 +486,7 @@ Discover:
 &nbsp;
 
 
-### 🎯 Exercise 01: Identify port connections between switches.
+### 🎯 Exercise 05: Identify port connections between switches.
 ~~~
 !@Switches
 clear cdp counter
@@ -508,14 +512,20 @@ show cdp neighbor
 <br>
 <br>
 <br>
-
----
-&nbsp;
-
-
-![3Tier_Ports](img/3Tier(Ports).jpg)
-
-
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
 
 <br>
 <br>
@@ -562,7 +572,7 @@ show int trunk
 &nbsp;
 
 
-### 🎯 Exercise 02: Configure Trunk links between C1,C2,A1,A2
+### 🎯 Exercise 06: Configure Trunk links between C1,C2,A1,A2
 
 <br>
 <br>
@@ -588,6 +598,7 @@ show int trunk
 <br>
 <br>
 <br>
+
 
 <br>
 <br>
@@ -595,6 +606,384 @@ show int trunk
 ---
 &nbsp;
 
+
+### Master Switching
+
+1. __Mode Button__
+- STAT: Link Status (Green = Link up, Amber = Fault/Blocked, Off = No link)
+- SPEED: Port Speed (Green = 1 Gbps, Amber = 10/100 Mbps, Off = 10 Mbps)
+- DPLX: Duplex Status (Green = Full, Amber = Half, Off = No connection)
+- POE: PoE Status (Green = Supplying power, Amber = Fault/Disabled)
+
+<br>
+
+2. __Password Recovery__
+- ROMMON
+
+~~~
+!@CoreTAAS (ROMMON)
+flash_init
+
+
+dir flash:
+delete flash:config.txt
+
+boot
+~~~
+
+
+<br>
+
+3. __Factory Reset__
+- Hold until All AMBER
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### L2 Switching vs L3 Routing
+
+~~~
+!@CoreTAAS
+conf t
+ hostname coreTaas-#$34T#
+ enable secret pass
+ service password-encryption
+ no logging console
+ no ip domain-lookup
+ line cons 0
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int vlan 1
+  no shut
+  ip add 10.#$34T#.1.2 255.255.255.0
+  desc DEFAULT-VLAN
+ int vlan 10
+  no shut
+  ip add 10.#$34T#.10.2 255.255.255.0
+  desc WIFI-VLAN
+ int vlan 50
+  no shut
+  ip add 10.#$34T#.50.2 255.255.255.0
+  desc CCTV-VLAN
+ int vlan 100
+  no shut
+  ip add 10.#$34T#.100.2 255.255.255.0
+  desc VOICE-VLAN
+ end
+~~~
+
+<br>
+
+~~~
+!@CoreBABA
+conf t
+ hostname coreBaba-#$34T#
+ enable secret pass
+ service password-encryption
+ no logging console
+ no ip domain-lookup
+ line cons 0
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int gi 0/1
+  no shut
+  no switchport
+  ip add 10.#$34T#.#$34T#.4 255.255.255.0
+ int vlan 1
+  no shut
+  ip add 10.#$34T#.1.4 255.255.255.0
+  desc DEFAULT-VLAN
+ int vlan 10
+  no shut
+  ip add 10.#$34T#.10.4 255.255.255.0
+  desc WIFI-VLAN
+ int vlan 50
+  no shut
+  ip add 10.#$34T#.50.4 255.255.255.0
+  desc CCTV-VLAN
+ int vlan 100
+  no shut
+  ip add 10.#$34T#.100.4 255.255.255.0
+  desc VOICE-VLAN
+ end
+
+!@dhcp
+conf t
+ ip dhcp excluded-add 10.#$34T#.1.1 10.#$34T#.1.100
+ ip dhcp excluded-add 10.#$34T#.10.1 10.#$34T#.10.100
+ ip dhcp excluded-add 10.#$34T#.50.1 10.#$34T#.50.100
+ ip dhcp excluded-add 10.#$34T#.100.1 10.#$34T#.100.100
+
+ ip dhcp pool POOLDATA
+  network 10.#$34T#.1.0 255.255.255.0
+  default-router 10.#$34T#.1.4
+  domain-name MGMTDATA.COM
+  dns-server 10.#$34T#.1.10
+ ip dhcp pool POOLWIFI
+  network 10.#$34T#.10.0 255.255.255.0
+  default-router 10.#$34T#.10.4
+  domain-name WIFIDATA.COM
+  dns-server 10.#$34T#.1.10
+  option 43 ip 10.#$34T#.10.#$34T#
+ ip dhcp pool POOLCCTV
+  network 10.#$34T#.50.0 255.255.255.0
+  default-router 10.#$34T#.50.4
+  domain-name CCTVDATA.COM
+  dns-server 10.#$34T#.1.10
+ ip dhcp pool POOLVOICE
+  network 10.#$34T#.100.0 255.255.255.0
+  default-router 10.#$34T#.100.4
+  domain-name VOICEDATA.COM
+  dns-server 10.#$34T#.1.10
+  option 150 ip 10.#$34T#.100.8
+ end
+
+!@switchport
+conf t
+ vlan 10
+  name WIFIVLAN
+ vlan 50
+  name CCTVVLAN
+ vlan 100
+  name VOICEVLAN
+ int fa 0/2
+  switchport mode access
+  switchport access vlan 10
+ int fa 0/4
+  switchport mode access
+  switchport access vlan 10
+ int fa 0/6
+  switchport mode access
+  switchport access vlan 50
+ int fa 0/8
+  switchport mode access
+  switchport access vlan 50
+ int fa 0/3
+  switchport mode access
+  switchport access vlan 100
+ int fa 0/5
+  switchport mode access
+  switchport voice vlan 100
+  switchport access vlan 1
+  mls qos trust device cisco-phone
+ int fa 0/7
+  switchport mode access
+  switchport voice vlan 100
+  switchport access vlan 1
+  mls qos trust device cisco-phone
+ end
+ 
+!@ospf routing corebaba
+ conf t
+  router ospf 1
+   router-id 10.#$34T#.#$34T#.4
+   network 10.#$34T#.0.0 0.0.255.255 area 0
+  int gi 0/1
+   ip ospf network point-to-point
+   end
+~~~
+
+<br>
+
+~~~
+!@CUCM
+conf t
+ hostname CUCM-#$34T#
+ enable secret pass
+ service password-encryption
+ no logging console
+ no ip domain-lookup
+ line cons 0
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int fa 0/0
+  no shut
+  ip add 10.#$34T#.100.8 255.255.255.0
+ end
+
+!@ospf routing CUCM
+conf t
+ router ospf 1
+  router-id 10.#$34T#.100.8
+  network 10.#$34T#.100.0 0.0.0.255 area 0
+  end
+~~~
+
+<br>
+
+~~~
+!@EDGE
+conf t
+ hostname EDGE-#$34T#
+ enable secret pass
+ service password-encryption
+ no logging console
+ no ip domain-lookup
+ line cons 0
+  password pass
+  login
+  exec-timeout 0 0
+ line vty 0 14
+  password pass
+  login
+  exec-timeout 0 0
+ int gi 0/0/0
+  no shut
+  ip add 10.#$34T#.#$34T#.1 255.255.255.0
+  desc INSIDE
+ int gi 0/0/1
+  no shut
+  ip add 200.0.0.#$34T# 255.255.255.0
+  desc OUTSIDE
+ int loopback 0
+  ip add #$34T#.0.0.1 255.255.255.255
+  desc VIRTUALIP
+ end
+
+!@ospf routing EDGE
+conf t
+ router ospf 1
+  router-id #$34T#.0.0.1
+  network 200.0.0.0 0.0.0.255 area 0
+  network 10.#$34T#.#$34T#.0 0.0.0.255 area 0
+  network #$34T#.0.0.1 0.0.0.0 area 0
+ int gi 0/0/0
+  ip ospf network point-to-point
+  end
+~~~
+
+<br>
+
+~~~
+!@P1
+conf t
+ int e0/0
+  no shut
+  ip add 10.2.1.101 255.255.255.0
+ ip route 0.0.0.0 0.0.0.0 10.2.1.1
+  end
+~~~
+
+<br>
+
+~~~
+!@P2
+conf t
+ int e1/0
+  no shut
+  ip add 10.2.1.102 255.255.255.0
+ ip route 0.0.0.0 0.0.0.0 10.2.1.2
+  end
+~~~
+
+<br>
+
+~~~
+!@A1
+conf t
+ int e0/0
+  switchport mode access
+  switchport access vlan 10
+  end
+~~~
+
+<br>
+
+~~~
+!@A2
+conf t
+ int e1/0
+  switchport mode access
+  switchport access vlan 10
+  end
+~~~
+
+<br>
+
+~~~
+!@C1
+conf t
+ router eigrp 100
+  no auto-summary
+  network 10.2.1.0 0.0.0.255
+  network 10.2.2.0 0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  network 10.1.4.4 0.0.0.3
+  end
+~~~
+
+<br>
+
+~~~
+!@C2
+conf t
+ router eigrp 100
+  no auto-summary
+  network 10.2.1.0 0.0.0.255
+  network 10.2.2.0 0.0.0.255
+  network 192.168.1.128 0.0.0.31
+  network 10.1.4.8 0.0.0.3
+  end
+~~~
+
+<br>
+
+~~~
+!@R4
+conf t
+ router eigrp 100
+  no auto-summary
+  network 10.1.4.4 0.0.0.3
+  network 10.1.4.8 0.0.0.3
+  network 4.4.4.4 0.0.0.0
+  end
+sh ip route eigrp
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### What to look for in a switch.
+1. Mac Address Learning
+2. Mac Address Filtering
+3. Mac Address Forwarding
+4. Loop Avoidance
+5. VLAN Feature
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### 2. DARNA (802.1D)
 
 __How to get fired!__
 ~~~
@@ -617,51 +1006,51 @@ conf t
 ~~~
 
 
-<br>
-<br>
-
+&nbsp;
 ---
 &nbsp;
 
 
-### 2. DARNA (802.1D)
 ### `32768  vs  24576  vs  28672`
 
 Properly configure the switch
 
 ~~~
-!@CoreTAAS & C1
+!@CoreTAAS & C2
 conf t
  spanning-tree mode pvst
  spanning-tree vlan 1-999 root primary
  end
+show spanning-tree vlan 1
 ~~~
 
 <br>
 
 ~~~
-!@CoreBABA & C2
+!@CoreBABA & C1
 conf t
  spanning-tree mode pvst
  spanning-tree vlan 1-999 root secondary
  end
+show spanning-tree vlan 1
 ~~~
 
 
-<br>
-<br>
 
 
-__Determine Port Roles__
+&nbsp;
+---
+&nbsp;
+
+
+### Map out the L2 Topology : Port Roles
 - Designated
 - Root
 - Alternate
 - Back
 
 
-<br>
-<br>
-
+&nbsp;
 ---
 &nbsp;
 
@@ -689,6 +1078,46 @@ __Determine Port Roles__
 &nbsp;
 
 
+### 🎯 Exercise 07: Determine Port Roles
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+&nbsp;
+---
+&nbsp;
+
+
 ### How to determine Port Cost
 Short Path Cost Method (IEEE 802.1D)
 
@@ -699,67 +1128,63 @@ Short Path Cost Method (IEEE 802.1D)
 | 1 Gbps     | 4            |
 | 10 Gbps    | 2            |
 
-
 <br>
-<br>
-
----
-&nbsp;
-
-
-### 🎯 Exercise 03: Identify port roles.
-
-
-![EX_STP](img/ex_stp.png)
-
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-
----
-&nbsp;
-
-
-
-
-
-<br>
-<br>
-
----
-&nbsp;
-
-
-### Modify Path costs
 
 ~~~
 !@A1
 conf t
- int e0/2
-  spanning-tree cost 10
+ int e0/1
+  spanning-tree cost 19
   end
-sh span vlan 1
+~~~
+
+<br>
+
+~~~
+!@C1
+conf t
+ int e1/3
+  spanning-tree cost 19
+  end
 ~~~
 
 
 <br>
+<br>
 
-Who is __DARNA__ (__802.1D__)
+---
+&nbsp;
+
+
+### 🎯 Exercise 08: Identify port roles.
+
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+
+---
+&nbsp;
+
+
+### Who is __DARNA__ (__802.1D__)
+
 | BLK | LIS | LRN | FWD   |
 | --- | --- | --- | ---   |
 |     | 15s | 15s | = 30s |
@@ -772,6 +1197,22 @@ Who is __DARNA__ (__802.1D__)
 4. Forwarding (FWD) - Forwards user traffic and BPDUs
 
 
+&nbsp;
+---
+&nbsp;
+
+
+### Switch Vulnerabilities: CDP, LLDP, DTP, & STP
+~~~
+!@C1
+conf t
+ int e3/3
+  no shut
+  switchport
+  end
+~~~
+
+
 <br>
 <br>
 
@@ -780,7 +1221,6 @@ Who is __DARNA__ (__802.1D__)
 
 
 ### 3. ⚡ WONDERWOMAN (802.1W)
-
 ~~~
 !@CoreTAAS & CoreBABA, C1,C2,A1,A2
 conf t
@@ -793,9 +1233,7 @@ show spanning-tree vlan 1
 2. Learning (LRN) - Builds MAC address table but does not forward user traffic
 3. Forwarding (FWD) - Forwards user traffic and BPDUs
 
-
 <br>
-
 
 __STP Features__
 1. Portfast - Skips all STP negotiation and go straight to forwarding.
@@ -806,8 +1244,7 @@ __STP Features__
 4. Root Guard - Stops a port from accepting superior BPDUs. | Blocking
 5. BPDUFilter - Will not send BPDUs until received.
 6. UplinkFast - Recover quickly from uplink failure.
-7. BackboneFast - Old ver of Uplinkfast
-
+7. BackboneFast - Skips to Listening State
 
 <br>
 
@@ -830,6 +1267,7 @@ conf t
 !@CoreBABA
 conf t
  spanning-tree uplinkfast    !unnecessary for rstp (has built-in convergence)
+ spanning-tree backbonefast
  spanning-tree portfast bpdufilter default
  spanning-tree portfast bpduguard default
  int range fa0/1-8
@@ -847,7 +1285,7 @@ conf t
 &nbsp;
 
 
-### 🎯 Exercise 04: Determine STP Features
+### 🎯 Exercise 09: Determine STP Features
 What STP features should be applied on the network to optimize STP traffic and network performance.
 
 ~~~
@@ -895,6 +1333,7 @@ conf t
   spanning-tree bpduguard enable
   spanning-tree bpdufilter enable
  spanning-tree backbonefast
+ spanning-tree uplinkfast
   end  
 ~~~
 
@@ -911,22 +1350,8 @@ conf t
   spanning-tree portfast edge
   spanning-tree bpduguard enable
   spanning-tree bpdufilter enable
-  end  
-~~~
-
-<br>
-
-~~~
-!@C2
-conf t
- int range e1/2-3
-  spanning-tree guard loop
-  spanning-tree portfast network
-  spanning-tree uplinkfast
- int e1/0,e1/1
-  spanning-tree portfast edge
-  spanning-tree bpduguard enable
-  spanning-tree bpdufilter enable
+ spanning-tree backbonefast
+ spanning-tree uplinkfast
   end  
 ~~~
 
@@ -939,12 +1364,12 @@ conf t
 
 
 ### 4. SUPERMAN (802.1S)
-Step 1: Configure VTP
+__Step 1__: Configure VTP
 
 ~~~
 !@CoreTAAS,C1,C2
 conf t
- vtp domain ccnp
+ vtp domain ccna
  vtp mode server
  vtp version 1
  end
@@ -953,7 +1378,7 @@ conf t
 ~~~
 !@CoreBABA,A1,A2
 conf t
- vtp domain ccnp
+ vtp domain ccna
  vtp version 1
  vtp mode client
  end
@@ -963,7 +1388,7 @@ conf t
 <br>
 
 
-Step 2: Configure VLANs
+__Step 2__: Configure VLANs
 
 ~~~
 !@CoreTAAS,C1
@@ -999,7 +1424,7 @@ conf t
 <br>
 
 
-Step 3: Enable 802.1S
+__Step 3__: Enable 802.1S
 ~~~
 !@CoreTAAS,CoreBABA,C1,C2,A1,A2
 conf t
@@ -1029,6 +1454,8 @@ config t
 end
 ~~~
 
+<br>
+
 ~~~
 !@CoreBABA,C2
 config t
@@ -1038,6 +1465,10 @@ config t
  spanning-tree mst 3 root primary
 end
 ~~~
+
+
+<br>
+
 
 Who is SUPERMAN (802.1S)
 Multiple VLANs sharing a spanning tree instance,  
@@ -1090,7 +1521,16 @@ show int po1 | inc BW
 &nbsp;
 
 
-### 🎯 Exercise 05: Configure Etherchannel links
+### 🎯 Exercise 10: Configure Etherchannel links
+
+| Device | Po  |
+| ---    | --- |
+| C1-C2  | 12  |
+| A1-C1  | 11  |
+| A1-C2  | 10  |
+| A2-C2  | 22  |
+| A2-C1  | 20  |
+
 
 <br>
 <br>
@@ -1110,6 +1550,7 @@ show int po1 | inc BW
 <br>
 <br>
 <br>
+
 
 <br>
 <br>
@@ -1189,6 +1630,7 @@ conf t
  int e0/0
   no shut
   ip add 10.2.1.101 255.255.255.0
+  ip route 0.0.0.0 0.0.0.0 10.2.1.1
   end
 ~~~
 
@@ -1200,6 +1642,7 @@ conf t
  int e0/0
   no shut
   ip add 10.2.1.102 255.255.255.0
+  ip route 0.0.0.0 0.0.0.0 10.2.1.2
   end
 ~~~
 
@@ -1233,7 +1676,7 @@ conf t
 &nbsp;
 
 
-### Port Security
+## Port Security
 ~~~
 !@CoreBABA
 conf t
@@ -1282,13 +1725,13 @@ config t
 
 ## ARP Inspection
 
-__STATIC DAI__
+__STATIC ARP INSPECTION__
 ~~~
 !@CoreBABA
 conf t
  ip arp inspection VLAN 1
  arp access-list STATIC-ARP
-  permit ip host __.__.__.__  mac __.__.__.__
+  permit ip host __.__.__.__  host mac __.__.__.__
 
   exit
  ip arp inspection filter STATIC-ARP vlan 1
@@ -1299,6 +1742,117 @@ conf t
   end
 ~~~  
 
+<br>
+
+~~~
+!@C1
+conf t
+ ip arp inspection vlan 10
+ arp access-list ARP
+  permit ip host 10.2.1.100 mac host 0050.56c0.000f
+ !
+ ip arp inspection filter ARP vlan 10 static
+ ip arp inspection validate src-mac dst-mac ip
+ !
+ int range e0/0-3,e1/0-3,e2/0-3,e3/0-2
+  ip arp inspection trust
+  end
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+## DHCP Snooping & DAI
+
+~~~
+!@C1
+conf t
+ ip dhcp excluded-address 10.2.1.1 10.2.1.100
+ ip dhcp pool MGMT
+  network 10.2.1.0 255.255.255.0
+  default-router 10.2.1.1
+  dns-server 192.168.1.133
+  domain-name C1.MGMT.COM
+ end
+~~~
+
+<br>
+
+~~~
+!@C2
+conf t
+ ip dhcp excluded-address 10.2.1.1 10.2.1.100
+ ip dhcp pool MGMT
+  network 10.2.1.0 255.255.255.0
+  default-router 10.2.1.2
+  dns-server 10.2.1.2
+  domain-name C2.MGMT.COM
+ end
+~~~
+
+<br>
+
+~~~
+!@A1
+conf t
+ ip dhcp snooping
+ ip dhcp snooping vlan 10
+ int po11
+  ip dhcp snooping trust
+  exit
+ int po10
+  no ip dhcp snooping trust
+  exit
+ !
+ no ip dhcp snooping information option
+ end
+show ip dhcp snooping
+show ip dhcp snooping binding
+~~~
+
+<br>
+
+~~~
+!@P1
+conf t
+ int e0/0
+  ip add dhcp
+  end
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+__PREVENT DHCP STARVATION ATTACKS__
+~~~
+!@CoreTAAS
+conf t
+ ip dhcp snooping
+ ip dhcp snooping vlan 1,10,50,100
+ int po1
+  ip dhcp snooping trust
+  exit
+ int fa0/1
+  no ip dhcp snooping trust
+  exit
+ !
+ no ip dhcp snooping information option
+ !
+ int fa0/1
+  ip dhcp snooping limit rate 10
+  end
+show ip dhcp snooping
+show ip dhcp snooping binding
+~~~
+
 
 <br>
 <br>
@@ -1308,7 +1862,17 @@ conf t
 
 
 ## FHRP
+1. HSRP - MAC: 0000.0C07.AC  xx
+2. VRRP - MAC: 0000.5E00.01  xx
+3. GLBP - MAC: 0007.b4       xx.yyzz
 
+
+&nbsp;
+---
+&nbsp;
+
+
+### HSRP
 ~~~
 !@CoreTAAS
 conf t
@@ -1333,7 +1897,6 @@ conf t
  !
  int vlan 1
   standby 1 ip 10.#$34T#.1.6
-  standby 1 preempt
   standby 1 Priority 100
   end
 ~~~
@@ -1351,6 +1914,7 @@ conf t
   standby 1 Priority 150
   standby 1 Track 1 decrement 60
   end
+sh standby
 ~~~
 
 <br>
@@ -1360,7 +1924,309 @@ conf t
 conf t
  int vlan 10
   standby 1 ip 10.2.1.3
-  standby 1 preempt
   standby 1 Priority 100
   end
+sh standby
 ~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### VRRP
+
+~~~
+!@C1
+conf t
+ track 1 int vlan 10 line-protocol
+ !
+ int vlan 10
+  no standby 1
+  !
+  vrrp 1 ip 10.2.1.3
+  vrrp 1 preempt
+  vrrp 1 Priority 150
+  vrrp 1 Track 1 decrement 60
+  end
+sh vrrp
+~~~
+
+<br>
+
+~~~
+!@C2
+conf t
+ int vlan 10
+  no standby 1
+  !
+  vrrp 1 ip 10.2.1.3
+  vrrp 1 Priority 100
+  end
+sh vrrp
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+
+## Cisco & Fortinet
+
+~~~
+!@FWEDGE - LOCAL USER DIRECTORY
+config system admin
+ edit admin
+  set accprofile super_admin
+  set vdom root
+  set password C1sc0123
+  next
+ edit user1
+  set accprofile super_admin
+  set vdom root
+  set password pass
+  end
+show system admin
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### IP ADDRESS
+~~~
+!@R4
+conf t
+ int e3/3
+  no shut
+  ip add 10.3.1.1 255.255.255.252
+  end 
+~~~
+
+<br>
+
+~~~
+!@FWEDGE - L2 & L3 INTERFACE
+config system interface
+ edit port2
+  set vdom root
+  set mode static
+  set type physical
+  set ip 10.3.1.2 255.255.255.252
+  set allowaccess ping https http ssh telnet
+  set status up
+  next
+ edit port1
+  set mode static
+  set ip 208.8.8.200 255.255.255.0
+  set allowaccess ping https http ssh telnet
+  next
+ edit loopback1
+  set vdom root
+  set type loopback
+  set status up
+  set ip 69.0.0.1 255.255.255.255
+  set allowaccess ping https http ssh telnet
+  end
+get system interface physical
+execute ping 10.3.1.1
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### STATIC ROUTING
+~~~
+!@FWEDGE
+get router info routing-table all
+#
+config router static
+ edit 1
+  set status enable
+  set dst 0.0.0.0/0
+  set gateway 208.8.8.2
+  set distance 254
+  set device port1
+  end
+execute ping 8.8.8.8
+execute traceroute 8.8.8.8
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### DYNAMIC ROUTING
+~~~
+!@C1,C2,R4
+conf t
+ no router eigrp 100
+ end
+~~~
+
+<br>
+
+~~~
+!@C1
+conf t
+ router ospf 1
+  network 10.1.4.4 0.0.0.3 area 0
+  network 10.2.1.0 0.0.0.255 area 0
+  network 10.2.2.0 0.0.0.255 area 0
+  network 192.168.1.129 0.0.0.31 area 0
+  end
+~~~
+
+<br>
+
+~~~
+!@C2
+conf t
+ router ospf 1
+  network 10.1.4.8 0.0.0.3 area 0
+  network 10.2.1.0 0.0.0.255 area 0
+  network 10.2.2.0 0.0.0.255 area 0
+  network 192.168.1.129 0.0.0.31 area 0
+  end
+~~~
+
+<br>
+
+~~~
+!@R4
+conf t
+ router ospf 1
+  router-id 4.4.4.4
+  exit
+ int range e1/0-1,e3/3
+  ip ospf 1 area 0
+ int e3/3
+  ip ospf network point-to-point
+  end
+sh ip ospf neigh
+~~~
+
+<br>
+
+~~~
+!@FWEDGE
+config router ospf 
+ set router-id 10.3.1.2
+ set passive-interface loopback1 port1
+ config area
+  edit 0.0.0.0
+  end
+ config network
+  edit 1
+   set prefix 208.8.8.0 255.255.255.0
+   set area 0.0.0.0
+   set comments OUTSIDE
+   next
+  edit 2
+   set prefix 10.3.1.0 255.255.255.252
+   set area 0.0.0.0
+   set comments INSIDE
+   next
+  edit 3
+   set prefix 69.0.0.1 255.255.255.255
+   set area 0.0.0.0
+   set comments LOOPBACK
+   end
+ config ospf-interface
+  edit FW-R4
+   set interface port2
+   set status enable
+   set network-type point-to-point
+   end
+  end
+get router info ospf neighbor
+get router info ospf status
+get router info routing-table all
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### FW POLICY
+~~~
+!@FWEDGE
+config firewall policy
+ edit 1
+  set name INSIDE-TO-OUTSIDE
+  set srcintf port2
+  set dstintf port1
+  set srcaddr all
+  set dstaddr all
+  set action accept 
+  set schedule always
+  set service ALL
+  set nat enable
+  next
+ edit 2
+  set name OUTSIDE-TO-INSIDE
+  set srcintf port1
+  set dstintf port2
+  set srcaddr all
+  set dstaddr all
+  set action accept 
+  set schedule always
+  set service ALL
+  set nat disable
+  end
+show firewall policy
+~~~
+
+
+&nbsp;
+---
+&nbsp;
+
+
+### REDISTRIBUTE : DEFAULT ROUTE PROPAGATION
+~~~
+!@FWEDGE
+config router ospf 
+ set default-information-originate enable 
+ end
+~~~
+
+<br>
+
+~~~
+!@P1
+ping 8.8.8.8
+traceroute 8.8.8.8 probe 1
+~~~
+
+
+<br>
+<br>
+
+---
+&nbsp;
+
+~~~
+!@FWEDGE
+config system interface
+ edit port2
+  config vrrp
+   edit 1
+    set ?
+~~~
+
+
+
